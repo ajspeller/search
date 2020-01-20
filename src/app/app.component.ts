@@ -8,10 +8,13 @@ import { WikipediaService } from './wikipedia.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+  results = [];
   constructor(private service: WikipediaService) {}
 
   onTerm(term: string) {
-    const results = this.service.search(term);
-    console.log(results);
+    this.service.search(term).subscribe(res => {
+      this.results = res.query.search;
+      console.log('results: ', this.results);
+    });
   }
 }
