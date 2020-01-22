@@ -1,6 +1,17 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { pluck } from 'rxjs/operators';
+
+interface WikipediaResponse {
+  query: {
+    search: {
+      title: string;
+      snippet: string;
+      pageid: number;
+    }[];
+  };
+}
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +21,7 @@ export class WikipediaService {
 
   constructor(private http: HttpClient) {}
 
-  search(term: string): Observable<any> {
+  search(term: string) {
     const params = new HttpParams()
       .set('action', 'query')
       .set('format', 'json')
@@ -19,6 +30,8 @@ export class WikipediaService {
       .set('srsearch', term)
       .set('origin', '*');
 
-    return this.http.get<Observable<any>>(`${this.baseUrl}`, { params });
+    return this.http
+      .get<WikipediaResponse>(`${this.baseUrl}`, { params })
+      .pipe(pluck('query', 'search'));
   }
 }
